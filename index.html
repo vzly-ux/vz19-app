@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#060b14" />
+  <title>VZ-19 Pro Max</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=1778149417" />
+</head>
+<body>
+  <div class="noise"></div>
+  <div class="app">
+
+    <header>
+      <div class="logo-block">
+        <div class="logo-badge">VZ<span>19</span></div>
+        <div>
+          <h1>Pro Max</h1>
+          <p>Analyse IA · Paris sportifs · <span class="version-tag" id="versionTag">v4.7</span></p>
+        </div>
+      </div>
+      <button id="installBtn" class="ghost hidden">⬇ Installer</button>
+    </header>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="scout">🔭 Scouting</button>
+      <button class="tab" data-tab="verdict">⚡ Verdict</button>
+      <button class="tab" data-tab="historique">📋 Historique</button>
+    </div>
+
+    <!-- TAB: SCOUTING -->
+    <div class="tab-content active" id="tab-scout">
+
+      <!-- STEP 1 : SCOUTING AUTO -->
+      <div class="card" id="cardStep1">
+        <div class="card-header">
+          <span class="step">1</span>
+          <h2>Scouting 24h <span class="badge-live">IA + WEB</span></h2>
+        </div>
+        <p class="hint">Sofascore fournit les matchs en temps réel. Claude sélectionne les 5 meilleures opportunités VZ-19. · <span style="color:var(--accent)" id="versionTag2">v4.7</span></p>
+
+        <div class="sport-filter">
+          <button class="sport-btn active" id="btnFoot" onclick="toggleSport(this,'Foot')">⚽ Foot</button>
+          <button class="sport-btn active" id="btnBasket" onclick="toggleSport(this,'Basket')">🏀 Basket</button>
+          <button class="sport-btn active" id="btnTennis" onclick="toggleSport(this,'Tennis')">🎾 Tennis</button>
+        </div>
+
+        <!-- Tennis : toujours copier/coller Gemini -->
+                <button class="primary full" id="btnAutoScout" style="margin-top:14px">
+          🔍 Recherche & sélection automatique →
+        </button>
+
+        <div id="scoutStatus" class="scout-status hidden"></div>
+      </div>
+
+      <!-- STEP 2 : MATCHS SÉLECTIONNÉS -->
+      <div class="card hidden" id="cardStep2">
+        <div class="card-header">
+          <span class="step">2</span>
+          <h2>Matchs sélectionnés <span class="badge-count" id="matchCount"></span></h2>
+        </div>
+        <p class="hint">Claude a sélectionné les meilleurs matchs VZ-19. Appuie sur celui que tu veux analyser.</p>
+        <div id="matchCards"></div>
+      </div>
+
+      <!-- STEP 3 : DONNÉES DÉTAILLÉES -->
+      <div class="card hidden" id="cardStep3">
+        <div class="card-header">
+          <span class="step">3</span>
+          <h2>Analyse <span class="badge-live">VZ-19</span></h2>
+        </div>
+        <div id="selectedMatchBadge"></div>
+
+        <!-- Pour foot/basket : données auto disponibles, prompt pour enrichir -->
+        <div id="autoDataBlock" class="hidden">
+          <div class="data-loaded-banner">
+            ✅ Données récupérées automatiquement
+          </div>
+          <p class="hint" style="margin-top:10px">Tu peux enrichir avec Gemini (optionnel) ou lancer directement l'analyse.</p>
+        </div>
+
+        <!-- Bloc Gemini optionnel -->
+        <div class="btn-row" style="margin:12px 0">
+          <button id="copyAnalysePrompt" class="ghost small">📋 Enrichir via Gemini</button>
+          <button id="openGemini2" class="ghost small">🌐 Gemini</button>
+        </div>
+        <label class="field-label">
+          📥 Données supplémentaires (optionnel)
+          <textarea id="matchGeminiData" placeholder="Colle ici des données supplémentaires de Gemini..."></textarea>
+        </label>
+
+        <button class="btn btn-primary full" id="btnAnalyse" style="margin-top:14px;width:100%;padding:18px;font-size:16px;border-radius:16px">🧠 Analyser avec Claude VZ-19 →</button>
+      </div>
+
+      <!-- STEP 4 : ANALYSE CLAUDE -->
+      <div class="card hidden" id="cardStep4">
+        <div class="card-header">
+          <span class="step">4</span>
+          <h2>Analyse VZ-19 <span class="badge-live">AUTO</span></h2>
+        </div>
+        <div class="ai-output" id="claudeOutputStep4">
+          <div class="loader-inline"><div class="loader-spinner small"></div><span>Claude analyse...</span></div>
+        </div>
+        <div class="btn-row" style="margin-top:10px">
+          <button class="btn btn-primary" id="btnVerdict" style="flex:1;padding:14px 18px;font-size:14px;border-radius:14px">⚡ Voir le Verdict →</button>
+          <button class="ghost" id="copyClaude" style="padding:14px 18px;border-radius:14px;font-size:13px">📋 Copier</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- TAB: VERDICT -->
+    <div class="tab-content" id="tab-verdict">
+      <div class="card">
+        <div class="card-header"><span class="step">⚡</span><h2>Verdict VZ-19</h2></div>
+
+        <!-- Match header -->
+        <div class="match-header" id="matchHeader">
+          <div style="color:var(--muted);font-family:var(--mono);font-size:12px">Lance une analyse →</div>
+        </div>
+
+        <!-- Scores -->
+        <div class="scores-row">
+          <div class="score-box">
+            <div class="score-label">Camp A</div>
+            <div id="scoreA" class="score-val">--</div>
+          </div>
+          <div class="score-box gap-box">
+            <div class="score-label">Écart</div>
+            <div id="gap" class="score-val">--</div>
+          </div>
+          <div class="score-box b-box">
+            <div class="score-label">Camp B</div>
+            <div id="scoreB" class="score-val">--</div>
+          </div>
+        </div>
+
+        <!-- Verdict badge -->
+        <div id="verdict" class="verdict-badge nobet" style="display:none"></div>
+
+        <!-- Best bet -->
+        <div id="bestBet" class="bestbet" style="display:none">
+          <div class="bestbet-label">🎯 Marché recommandé</div>
+          <div id="bestBetContent"></div>
+        </div>
+
+        <!-- Risques -->
+        <div id="risks" class="risks" style="display:none">
+          <div class="risks-label">⚠️ Risques</div>
+          <div id="risksContent"></div>
+        </div>
+
+        <!-- Analyse complète -->
+        <div style="margin-top:16px">
+          <div class="analyse-section-title">📊 Analyse complète</div>
+          <div id="claudeOutput" class="analyse-output" style="min-height:60px;color:var(--muted);font-size:13px">En attente...</div>
+        </div>
+
+        <!-- Conclusion -->
+        <div style="margin-top:16px">
+          <div class="conclusion-title">📝 Conclusion finale</div>
+          <div class="conclusion-box">
+            <textarea id="finalPrompt" readonly style="min-height:120px;background:transparent;border:none;padding:0;font-size:11px;resize:none"></textarea>
+          </div>
+        </div>
+
+        <div class="btn-row" style="margin-top:14px">
+          <button id="copyFinal" class="btn btn-primary full">📋 Copier</button>
+        </div>
+        <div class="btn-row" style="margin-top:8px;display:flex;gap:8px">
+          <button id="saveMatch" class="ghost" style="flex:1">💾 Sauvegarder</button>
+          <button id="newAnalyse" class="ghost" style="flex:1">🔄 Nouveau</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: HISTORIQUE -->
+    <div class="tab-content" id="tab-historique">
+      <div class="card">
+        <div class="card-header"><h2>📋 Historique</h2></div>
+        <p class="hint">Tes 20 dernières analyses sauvegardées.</p>
+        <div id="historiqueList"><div class="ai-placeholder">Aucune analyse sauvegardée.</div></div>
+        <button class="ghost danger" id="clearHistory" style="margin-top:14px;width:100%">🗑 Vider l'historique</button>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="loader-overlay hidden" id="loaderOverlay">
+    <div class="loader-box">
+      <div class="loader-spinner"></div>
+      <div class="loader-text" id="loaderText">Récupération des données...</div>
+    </div>
+  </div>
+
+  <script src="app.js?v=1778149417"></script>
+</body>
+</html>
