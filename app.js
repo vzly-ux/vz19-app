@@ -12,7 +12,7 @@ const showCard = id => { $(id).classList.remove("hidden"); setTimeout(() => $(id
 (function() {
   const now = new Date();
   const pad = n => String(n).padStart(2, "0");
-  const build = "13.0"; const label = `v${build} · ${pad(now.getDate())}/${pad(now.getMonth()+1)} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+  const build = "14.0"; const label = `v${build} · ${pad(now.getDate())}/${pad(now.getMonth()+1)} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
   ["versionTag", "versionTag2"].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.textContent = label;
@@ -66,7 +66,7 @@ async function callClaude(system, user, webSearch) {
     messages: [{ role: "user", content: user }],
     web_search: webSearch === true
   };
-  const res = await fetch("/.netlify/functions/claude", {
+  const res = await fetch("/api/claude", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body)
@@ -87,7 +87,7 @@ function getToday() {
 
 async function fetchMatchesRaw() {
   try {
-    const res = await fetch("/.netlify/functions/sports-data");
+    const res = await fetch("/api/sports-data");
     if (!res.ok) return { matches: [], errors: [`HTTP ${res.status}`], breakdown: {} };
     const data = await res.json();
     const filtered = (data.matches || []).filter(m => {
